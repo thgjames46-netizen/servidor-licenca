@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
+const fs = require('fs');
 
 app.use(express.json());
 
@@ -11,13 +12,17 @@ app.get('/ping', (req, res) => {
 
 // Rota de Validação (App UniTV)
 app.all('/validar', (req, res) => {
-  const mac = req.query.mac || req.body.mac;
-  const chave = req.body.chave;
-  console.log(`Validação solicitada para MAC: ${mac} ou Chave: ${chave}`);
-  res.json({
-    "status": "valida",
-    "mensagem": "Licença ativa!"
-  });
+  const chave = req.query.chave || req.body.chave;
+  try {
+    const db = JSON.parse(fs.readFileSync('db.json', 'utf8'));
+    if (db.chaves[chave] && db.chaves[chave].status === "valida") {
+      res.json({ "status": "valida", "mensagem": "Licença ativa!" });
+    } else {
+      res.json({ "status": "invalida", "mensagem": "Licença expirada ou inválida!" });
+    }
+  } catch (error) {
+    res.json({ "status": "erro", "mensagem": "Erro no servidor" });
+  }
 });
 
 app.listen(port, () => {

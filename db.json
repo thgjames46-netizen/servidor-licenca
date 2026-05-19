@@ -1,0 +1,9 @@
+{
+  "chaves": {
+    "UNITV2026": {
+      "status": "valida",
+      "cliente": "Admin",
+      "expira": "2027-12-31"
+    }
+  }
+}
